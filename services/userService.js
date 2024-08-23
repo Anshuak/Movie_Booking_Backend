@@ -46,10 +46,35 @@ module.exports.loginUserService = async (email, password) => {
             return { status: 400, message: "Invalid Credentials" }
         }
 
-        // generate token
-        const token = generateToken(user);
         const userDetails = await User.findOne({ email }).select('firstName lastName email phoneNumber role')
-        return { status: 200, data: { token, user: userDetails }, message: `${user.name} logged in successfully` }
+        // generate token
+        const token = generateToken(userDetails);
+        return { status: 200, data: { token, user: userDetails }, message: `${user.firstName} logged in successfully` }
+    }
+    catch (err) {
+        console.error(err);
+        return { status: 500, err: 'Internal Server Error' }
+    }
+}
+
+module.exports.forgotPasswordService = async (email, password, confirmPassword) => {
+    try {
+
+        // check email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return { status: 400, message: "Invalid Credentials" };
+        }
+
+        // match password
+        if (password !== confirmPassword) {
+            return { status: 400, message: "Passwords are not matching" }
+        }
+
+        // hash the password
+        let hashedPassword = hashPassword(password);
+        await User.findByIdAndUpdate(user._id, { password: hashedPassword });
+        return { status: 200, message: "Password successfully updated" };
     }
     catch (err) {
         console.error(err);

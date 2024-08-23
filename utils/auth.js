@@ -14,7 +14,19 @@ module.exports.comparePassword = (password, hashedPassword) => {
 
 
 module.exports.generateToken = (user) => {
-    console.log(user);
     const token = jwt.sign({ user }, process.env.SECRET_KEY);
     return token;
+}
+
+module.exports.verifyToken = (token) => {
+    return jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+        if (err) {
+            return false;
+        }
+
+        // Add the decoded user information to the request object
+        return decoded;
+
+        // Call the next middleware or route handler
+    });
 }
