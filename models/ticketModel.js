@@ -6,12 +6,14 @@ const ticketSchema = new mongoose.Schema({
         required: true,
         min: 1
     },
-    movieId: {
-        type: mongoose.Schema.Types.ObjectId,
+    movieName: {
+        type: String,
         required: true,
-        ref: 'Movie'
     },
-
+    theatreName: {
+        type: String,
+        required: true
+    },
     seatNumber: {
         type: [Number],
         required: true,
@@ -21,6 +23,10 @@ const ticketSchema = new mongoose.Schema({
         required: true,
         ref: 'User'
     },
+    created_at: {
+        type: Date,
+        default: Date.now
+    }
 })
 
 const Ticket = mongoose.model('Ticket', ticketSchema);
