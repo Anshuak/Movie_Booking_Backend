@@ -1,9 +1,15 @@
 const { hashPassword, comparePassword, generateToken } = require('../utils/auth')
 const User = require('../models/userModel');
+const { registerUserValidation, loginUserValidation } = require("../validations/validation.js");
 
 module.exports.registerUserService = async (user) => {
     try {
         // validation
+        let validation = registerUserValidation(user);
+        if (validation.fails()) {
+            return { status: 400, message: "Invalid", errors: validation.errors.all() };
+        }
+
         // check email is unique or not
         const isEmailAlreadyPresent = await User.findOne({ email: user.email });
         if (isEmailAlreadyPresent) {
@@ -33,7 +39,10 @@ module.exports.loginUserService = async (email, password) => {
     try {
 
         // validation
-
+        let validation = loginUserValidation({email, password});
+        if (validation.fails()) {
+            return { status: 400, message: "Invalid", errors: validation.errors.all() };
+        }
         // check whether email is valid or not
         const user = await User.findOne({ email });
         if (!user) {
