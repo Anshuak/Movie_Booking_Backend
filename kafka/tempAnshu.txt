@@ -1,0 +1,11 @@
+when an api to book a ticket is called on my node server, I want apache kafka event to trigger and that same node server produces a message.
+
+
+
+
+// prompt 2
+This same node server has a post api to book tickets, and a post api to change the 'bookingStatus' from 'tickets avilable' to 'sold out', in the connected mongo database.
+
+I want a kafka producer to send a message, every time a ticket is booked, and then the kafka consumer to change the status automatically, if all the available tickets are booked. 
+
+Both resides in the same node microservice.
