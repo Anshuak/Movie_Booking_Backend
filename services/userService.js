@@ -1,6 +1,6 @@
 const { hashPassword, comparePassword, generateToken } = require('../utils/auth')
 const User = require('../models/userModel');
-const { registerUserValidation, loginUserValidation } = require("../validations/validation.js");
+const { registerUserValidation, loginUserValidation, forgotPasswordValidation } = require("../validations/validation.js");
 
 module.exports.registerUserService = async (user) => {
     try {
@@ -68,6 +68,11 @@ module.exports.loginUserService = async (email, password) => {
 
 module.exports.forgotPasswordService = async (email, password, confirmPassword) => {
     try {
+        //validation
+        let validation = forgotPasswordValidation({email, password, confirmPassword});
+        if (validation.fails()) {
+            return { status: 400, message: "Invalid", errors: validation.errors.all() };
+        }
 
         // check email
         const user = await User.findOne({ email });

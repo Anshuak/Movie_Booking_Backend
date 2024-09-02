@@ -7,6 +7,7 @@ const adminRoleMiddleware = require('../utils/adminRoleMiddleware');
 router.post('/:movieName/add', authMiddleware, bookTicket);
 
 // update alloted tickets for a particular movie/theatre : put
+// this updates theatre capacity for a particular (movie + theatre) in movies collection
 router.put('/:movieName/update/:ticket', authMiddleware, adminRoleMiddleware, updateAllotedTickets);
 
 

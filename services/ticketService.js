@@ -1,8 +1,18 @@
 const Ticket = require("../models/ticketModel");
 const Movie = require("../models/movieModel");
+const { sendMessage } = require('../kafka/kafkaProducer');
+const { bookTicketValidation } =  require("../validations/validation.js");
+
 
 module.exports.bookTicketService = async (movieName, { theatreName, userId, numberOfBookedTickets }) => {
     try {
+        //validation
+        
+        let validation = bookTicketValidation({theatreName, userId, numberOfBookedTickets});
+        if (validation.fails()) {
+            return { status: 400, message: "Invalid", errors: validation.errors.all() };
+        }
+        
         // check tickets are available or not
         // check how many tickets are already booked for particular movie/theatre
         let ticketsAlreadyBooked = 0;
@@ -42,6 +52,10 @@ module.exports.bookTicketService = async (movieName, { theatreName, userId, numb
             seatNumber
         })
         const savedTicket = await ticket.save();
+
+        // send kafka producer message
+        await sendMessage('ticket-booked', JSON.stringify({ movieName: savedTicket.movieName, theatreName: savedTicket.theatreName }));
+
         return {
             status: 201, message: `${savedTicket.numberOfBookedTickets} Ticket/s Successfully booked of movie ${savedTicket.movieName} at theatre ${savedTicket.theatreName}`, data: { ticket: savedTicket }
         }
@@ -52,9 +66,13 @@ module.exports.bookTicketService = async (movieName, { theatreName, userId, numb
     }
 }
 
+// updates theatre capacity tickets via admin
 module.exports.updateAllotedTicketsService = async (movieName, ticket, theatreName) => {
 
     try {
+        // validation
+
+
         // number of bookedTickets for a particular movie/theatre
         let ticketsAlreadyBooked = 0;
         const tickets = await Ticket.find({ movieName, theatreName }); // Fetch all tickets

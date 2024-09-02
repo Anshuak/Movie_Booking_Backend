@@ -1,5 +1,6 @@
 const Movie = require("../models/movieModel");
 const Ticket = require("../models/ticketModel");
+const { deleteMovieValidation } =  require("../validations/validation.js");
 
 module.exports.getAllMoviesService = async () => {
     try {
@@ -25,6 +26,8 @@ module.exports.getAllMoviesService = async () => {
 
 module.exports.searchMovieByNameService = async (movieName) => {
     try {
+        
+        //logic
         const regex = new RegExp(movieName, 'i');
         const movies = await Movie.find({ movieName: regex });
 
@@ -39,8 +42,15 @@ module.exports.searchMovieByNameService = async (movieName) => {
     }
 }
 
+// last api to delete movie via admin
 module.exports.deleteMovieService = async (movieName, theatreName) => {
     try {
+
+        //validation
+        let validation = deleteMovieValidation({movieName, theatreName});
+        if (validation.fails()) {
+            return { status: 400, message: "Invalid", errors: validation.errors.all() };
+        }
 
         // check movie is present or not
         let isMoviePresent = await Movie.findOne({ movieName, theatreName });
