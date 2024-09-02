@@ -10,7 +10,7 @@
     "test:coverage": "jest --coverage",
     "test:coverage:watch": "jest --coverage --watch"
   },
-  "author": "Anshu Kailash",
+  "author": "Keshav Tiwari",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",

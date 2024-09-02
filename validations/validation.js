@@ -63,3 +63,15 @@ module.exports.deleteMovieValidation = (data) => {
     let validation = new Validator(data, rules);
     return validation;
 }
+
+module.exports.updateAllotedTicketsValidation = (data) => {
+
+    let rules = {
+        movieName: "string|required",
+        theatreName: "string|required",
+        ticket: "integer|required|min:0"
+    }
+
+    let validation = new Validator(data, rules);
+    return validation;
+}

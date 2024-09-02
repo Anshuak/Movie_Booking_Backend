@@ -28,6 +28,7 @@ const consumeMessages = async () => {
         
         await movie.save();
       }
+     
     },
   });
 };

@@ -1,7 +1,7 @@
 const Ticket = require("../models/ticketModel");
 const Movie = require("../models/movieModel");
 const { sendMessage } = require('../kafka/kafkaProducer');
-const { bookTicketValidation } =  require("../validations/validation.js");
+const { bookTicketValidation, updateAllotedTicketsValidation } =  require("../validations/validation.js");
 
 
 module.exports.bookTicketService = async (movieName, { theatreName, userId, numberOfBookedTickets }) => {
@@ -71,7 +71,10 @@ module.exports.updateAllotedTicketsService = async (movieName, ticket, theatreNa
 
     try {
         // validation
-
+        let validation = updateAllotedTicketsValidation({movieName, theatreName, ticket});
+        if (validation.fails()) {
+            return { status: 400, message: "Invalid", errors: validation.errors.all() };
+        }
 
         // number of bookedTickets for a particular movie/theatre
         let ticketsAlreadyBooked = 0;
@@ -86,8 +89,13 @@ module.exports.updateAllotedTicketsService = async (movieName, ticket, theatreNa
             return { status: 400, message: "Updated number of tickets can't than the already booked tickets" }
         }
 
+        let ticketStatus = (ticketsAlreadyBooked >= ticket) ? "SOLD OUT" : "BOOK ASAP";
+        // if(ticketsAlreadyBooked === ticket){
+        //     ticketStatus = "SOLD OUT"
+        // }
+
         // update ticket
-        let updatedMovie = await Movie.findOneAndUpdate({ movieName, theatreName }, { totalSeatsAlloted: ticket }, { new: true });
+        let updatedMovie = await Movie.findOneAndUpdate({ movieName, theatreName }, { totalSeatsAlloted: ticket, ticketStatus }, { new: true });
 
         return { status: 200, message: "ticket slots updated!", data: { movie: updatedMovie } }
     }
