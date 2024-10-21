@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { getAllMovies, searchMovieByName, deleteMovie } = require('../controllers/movieController');
+const { getAllMovies, searchMovieByName, deleteMovie, addMovie, updateMovie } = require('../controllers/movieController');
 const authMiddleware = require("../utils/authMiddleware");
 const adminRoleMiddleware = require("../utils/adminRoleMiddleware");
 
@@ -7,5 +7,7 @@ const adminRoleMiddleware = require("../utils/adminRoleMiddleware");
 router.get('/all', getAllMovies);
 router.get('/movies/search/:movieName', searchMovieByName);
 router.delete('/:movieName/delete/:userId', authMiddleware, adminRoleMiddleware, deleteMovie);
+router.post('/movies/add/:userId', authMiddleware, adminRoleMiddleware, addMovie);
+router.put('/movies/:movieId/update/:userId', authMiddleware, adminRoleMiddleware, updateMovie);
 
 module.exports = router;

@@ -21,3 +21,5 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Listening to PORT ${PORT}\nhttp://localhost:${PORT}`))
+
+module.exports = app;
