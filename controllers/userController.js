@@ -1,4 +1,4 @@
-const { registerUserService, loginUserService, forgotPasswordService } = require('../services/userService')
+const { registerUserService, loginUserService, forgotPasswordService, getMyBookedTicketsService } = require('../services/userService')
 
 module.exports.registerUser = async (req, res) => {
     const user = req.body;
@@ -18,4 +18,12 @@ module.exports.forgotPassword = async (req, res) => {
     const response = await forgotPasswordService(email, password, confirmPassword);
     res.status(response.status).json(response);
 }
+
+module.exports.getMyBookedTickets = async (req, res) => {
+    const { userId } = req.params;
+    const response = await getMyBookedTicketsService(userId);
+    res.status(response.status).json(response);
+}
+
+
 

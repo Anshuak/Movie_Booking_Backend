@@ -14,9 +14,14 @@ module.exports.bookTicketService = async (movieName, { theatreName, userId, numb
 
         // slots Alloted for particlular movie/theatre
         let movie = await Movie.findOne({ movieName, theatreName });
+        // console.log(movie);
 
         // check numberofBookedTickets are available or not
         let availableTickets = movie.totalSeatsAlloted - ticketsAlreadyBooked;
+        console.log(ticketsAlreadyBooked, 'ticketsAlreadyBooked')
+        console.log(movie.totalSeatsAlloted, 'movie.totalSeatsAlloted')
+        console.log(availableTickets, 'availableTickets')
+        console.log(numberOfBookedTickets, 'numberOfBookedTickets')
         if (numberOfBookedTickets > availableTickets) {
             return { status: 400, message: `Booking conflict: Requested ${numberOfBookedTickets} tickets but only ${availableTickets} are available.` }
         }
@@ -48,7 +53,7 @@ module.exports.bookTicketService = async (movieName, { theatreName, userId, numb
     }
     catch (err) {
         console.error(err);
-        return { status: 500, err: 'Internal Server Error' };
+        return { status: 500, message: 'Internal Server Error' };
     }
 }
 

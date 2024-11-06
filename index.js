@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors')
 const app = express();
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger'); // Path to your swagger.js file
@@ -7,6 +8,7 @@ const userRouter = require('./routes/userRouter');
 const movieRouter = require('./routes/movieRouter');
 const ticketRouter = require('./routes/ticketRouter');
 app.use(express.json());
+app.use(cors())
 
 const connectDB = require('./config/db');
 connectDB();

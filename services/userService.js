@@ -1,5 +1,7 @@
 const { hashPassword, comparePassword, generateToken } = require('../utils/auth')
 const User = require('../models/userModel');
+const Ticket = require('../models/ticketModel');
+const Movie = require('../models/movieModel');
 const { registerUserValidation, loginUserValidation } = require("../validations/validation.js");
 
 module.exports.registerUserService = async (user) => {
@@ -39,7 +41,7 @@ module.exports.loginUserService = async (email, password) => {
     try {
 
         // validation
-        let validation = loginUserValidation({email, password});
+        let validation = loginUserValidation({ email, password });
         if (validation.fails()) {
             return { status: 400, message: "Invalid", errors: validation.errors.all() };
         }
@@ -84,6 +86,38 @@ module.exports.forgotPasswordService = async (email, password, confirmPassword) 
         let hashedPassword = hashPassword(password);
         await User.findByIdAndUpdate(user._id, { password: hashedPassword });
         return { status: 200, message: "Password successfully updated" };
+    }
+    catch (err) {
+        console.error(err);
+        return { status: 500, err: 'Internal Server Error' }
+    }
+}
+
+module.exports.getMyBookedTicketsService = async (userId) => {
+    try {
+
+        // check user is valid or not
+        const user = await User.findById(userId);
+        if (!user) {
+            return { status: 400, message: "Invalid User" };
+        }
+
+        const tickets = await Ticket.find({ userId }).lean();
+
+        if (!tickets) {
+            return { status: 400, message: "No Booked Tickets" };
+        }
+
+        // console.log(tickets)
+
+        const updatedTickets = await Promise.all(tickets.map(async (ticket) => {
+            const movie = await Movie.findOne({ movieName: ticket.movieName, theatreName: ticket.theatreName }).lean();
+            ticket = { ...ticket, movie };  // Attach the movie to the ticket
+            return ticket;  // Return the updated ticket
+        }));
+
+
+        return { status: 200, data: { tickets: updatedTickets } };
     }
     catch (err) {
         console.error(err);

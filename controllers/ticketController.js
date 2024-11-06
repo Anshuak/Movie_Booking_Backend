@@ -3,6 +3,7 @@ const { bookTicketService, updateAllotedTicketsService } = require("../services/
 module.exports.bookTicket = async (req, res) => {
     const { movieName } = req.params;
     const ticketDetails = req.body;
+    console.log(ticketDetails)
     const response = await bookTicketService(movieName, ticketDetails);
     res.status(response.status).json(response);
 }
