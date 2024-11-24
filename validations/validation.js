@@ -24,3 +24,18 @@ module.exports.loginUserValidation = (data) => {
     let validation = new Validator(data, rules);
     return validation;
 }
+
+
+// add movie validation
+module.exports.movieValidation = (data) => {
+    let rules = {
+        movieName: "string|min:1|required",
+        theatreName: "string|min:1|required",
+        totalSeatsAlloted: "integer|min:1|required",
+    }
+
+    console.log('here')
+
+    let validation = new Validator(data, rules);
+    return validation;
+}

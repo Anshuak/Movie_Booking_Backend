@@ -11,10 +11,9 @@ module.exports.searchMovieByName = async (req, res) => {
     res.status(response.status).json(response);
 }
 
-module.exports.deleteMovie = async (req, res) => {
-    const { movieName } = req.params;
-    const { theatreName } = req.body;
-    const response = await deleteMovieService(movieName, theatreName);
+module.exports.deleteMovie = async (req, res) => {;
+    const { movieId } = req.params;
+    const response = await deleteMovieService(movieId);
     res.status(response.status).json(response);
 }
 
@@ -22,6 +21,7 @@ module.exports.deleteMovie = async (req, res) => {
 module.exports.addMovie = async (req, res) => {
     const movie = req.body;
     const response = await addMovieService(movie);
+    console.log(response)
     res.status(response.status).json(response);
 }
 

@@ -10,4 +10,5 @@ router.post('/login', loginUser);
 // forgot password :put
 router.put('/:email/forgot', authMiddleware, forgotPassword);
 
+
 module.exports = router;
