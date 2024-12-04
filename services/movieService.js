@@ -104,14 +104,27 @@ module.exports.addMovieService = async (movie) => {
 module.exports.updateMovieService = async (movieId, movie) => {
     try {
         // check movie is present or not
+        let validation = movieValidation(movie);
+        console.log(validation.fails())
+        if (validation.fails()) {
+            console.log(validation.errors.all())
+            return { status: 400, message: "Invalid", errors: validation.errors.all() };
+        }
         let isMoviePresent = await Movie.findById(movieId);
         if (!isMoviePresent) {
             return { status: 400, message: "Movie Not Present" };
         }
 
-        let updatedMovie = await Movie.findByIdAndUpdate(movieId, movie);
 
-        return { status: 200, message: "Movie updated successfully" };
+        let isMovieAlreadyPresent = await Movie.findOne({ movieName: movie.movieName, theatreName: movie.theatreName });
+        // console.log(isMovieAlreadyPresent._id == movieId)
+        if (isMovieAlreadyPresent && isMovieAlreadyPresent._id != movieId) {
+            return { status: 400, message: "Movie Already Present" };
+        }
+
+        let updatedMovie = await Movie.findByIdAndUpdate(movieId, movie, { new: true });
+
+        return { status: 200, message: "Movie updated successfully", movie: updatedMovie };
     }
     catch (err) {
         console.error(err);
