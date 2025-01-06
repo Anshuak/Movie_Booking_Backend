@@ -14,6 +14,17 @@ module.exports.registerUserValidation = (data) => {
     return validation;
 }
 
+module.exports.editUserDetailsValidation = (data) => {
+    let rules = {
+        firstName: "alpha|min:1|required",
+        lastName: "alpha|min:2|required",
+        email: "email|required",
+        phoneNumber: "digits:10|required",
+    }
+
+    let validation = new Validator(data, rules);
+    return validation;
+}
 module.exports.loginUserValidation = (data) => {
 
     let rules = {

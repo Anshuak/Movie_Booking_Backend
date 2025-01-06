@@ -1,13 +1,14 @@
 const { hashPassword, comparePassword, generateToken } = require('../utils/auth')
 const User = require('../models/userModel');
-const { registerUserValidation, loginUserValidation } = require("../validations/validation.js");
+const Ticket = require('../models/ticketModel');
+const { registerUserValidation, loginUserValidation, editUserDetailsValidation } = require("../validations/validation.js");
 
 module.exports.registerUserService = async (user) => {
     try {
         // validation
         let validation = registerUserValidation(user);
         if (validation.fails()) {
-            return { status: 400, message: "Invalid", errors: validation.errors.all() };
+            return { status: 400, message: "Enter the Details Correctly", errors: validation.errors.all() };
         }
 
         // check email is unique or not
@@ -27,6 +28,7 @@ module.exports.registerUserService = async (user) => {
 
         const newUser = new User({ ...user, password: hashedPassword });
         const savedUser = await newUser.save();
+        console.log(savedUser);
         return { status: 201, message: "User successfully registered" };
     }
     catch (err) {
@@ -91,3 +93,59 @@ module.exports.forgotPasswordService = async (email, password, confirmPassword) 
     }
 }
 
+module.exports.deleteUserService = async (userId) => {
+    try {
+        // check userId is valid or not
+        const user = await User.findById(userId);
+
+        if(!user){
+            return { status: 400, message: "Invalid User Id" };
+        }
+
+        // check user with this id have booked tickets or not
+        const tickets = await Ticket.find({ userId });
+        console.log(tickets)
+        if(tickets?.length > 0){
+            return { status: 400, message: "Cannot Delete!! User have booked tickets" }
+        }
+
+        await User.findByIdAndDelete(userId);
+        return { status: 200, message: "User successfully deleted" };
+
+    }
+    catch(err){
+        console.error(err);
+        return { status: 500, err: 'Internal Server Error' }
+    }
+}
+
+module.exports.updateUserService = async (userId, userData) => {
+    try {
+        let validation = editUserDetailsValidation(userData);
+        if (validation.fails()) {
+            return { status: 400, message: "Enter the details Correctly", errors: validation.errors.all() };
+        }
+        // check userId is valid or not
+        const user = await User.findById(userId);
+
+        if(!user){
+            return { status: 400, message: "Invalid User Id" };
+        }
+
+        // check email is unique or not
+        const isEmailAlreadyPresent = await User.findOne({ email: userData.email });
+        console.log(isEmailAlreadyPresent._id === user._id);
+        
+        if (isEmailAlreadyPresent && isEmailAlreadyPresent._id.toString() !== userId) {
+            return { status: 400, error: "Email is already present" }
+        }
+
+       const savedUser = await User.findByIdAndUpdate(userId, userData  , { new: true });
+       console.log('svved', savedUser);
+       return { status: 200, message: "User successfully updated", data: {user: savedUser} };
+    }
+    catch(err){
+        console.error(err);
+        return { status: 500, err: 'Internal Server Error' }
+    }
+}
