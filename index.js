@@ -7,6 +7,7 @@ const userRouter = require('./routes/userRouter');
 const movieRouter = require('./routes/movieRouter');
 const ticketRouter = require('./routes/ticketRouter');
 app.use(express.json());
+app.use(require('cors')());
 
 const connectDB = require('./config/db');
 connectDB();
